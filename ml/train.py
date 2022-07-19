@@ -58,29 +58,6 @@ def evaluate(model, test_loader, device):
         return 100 * correct / total
 
 
-def evaluate_show_error(model, test_loader, device, num=5):
-    model.eval()
-    with torch.no_grad():
-        correct = 0
-        total = 0
-        for images, labels in test_loader:
-            images = images.to(device)
-            labels = labels.to(device)
-            outputs = model(images)
-            _, predicted = torch.max(outputs.data, 1)
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
-
-            if labels.size(0) != (predicted == labels).sum().item():
-                incorrect = (predicted != labels).nonzero(as_tuple=True)[0]
-                for i in incorrect:
-                    index = int(i.item())
-                    show_inference(images[index].numpy().transpose(1, 2, 0).copy(),
-                                   labels[index], predicted[index])
-
-        print('Test Accuracy of the model is: {} %'.format(100 * correct / total))
-
-
 def save_model(model, save_path='lenet.pth'):
     ckpt_dict = {
         'state_dict': model.state_dict()
@@ -276,56 +253,6 @@ def train_with_log(file, epochs, batch_size, learning_rate, num_classes, model='
     return model
 
 
-def train_show_error(epochs, batch_size, learning_rate, num_classes):
-
-    # fetch data
-    train_loader, test_loader = get_data_loader(batch_size)
-
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-
-    # Select model
-    # model = LeNet(num_classes).to(device)
-    model = AdvancedLeNet(num_classes).to(device)
-
-    # Loss and optimizer
-    criterion = torch.nn.CrossEntropyLoss()
-    # optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-    optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
-
-    # start train
-    total_step = len(train_loader)
-    for epoch in range(epochs):
-        for i, (images, labels) in enumerate(train_loader):
-
-            # get image and label
-            images = images.to(device)
-            labels = labels.to(device)
-
-            # Forward pass
-            outputs = model(images)
-            loss = criterion(outputs, labels)
-
-            # Backward and optimize
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-
-            if (i + 1) % 100 == 0:
-                print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
-                      .format(epoch + 1, epochs, i + 1, total_step, loss.item()))
-
-        # evaluate after epoch train
-        if epoch < epochs - 1:
-            evaluate(model, test_loader, device)
-        else:
-            evaluate_show_error(model, test_loader, device)
-
-    # save the trained model
-    # save_model(model, save_path='lenet.pth')
-    save_onnx(model, torch.randn(4, 1, 28, 28), save_path='lenet.onnx')
-    return model
-
-
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--epochs', type=int, default=10)
@@ -340,4 +267,5 @@ if __name__ == '__main__':
     args = parse_args()
     # train(args.epochs, args.batch_size, args.lr, args.num_classes)
     # train_show_error(args.epochs, args.batch_size, args.lr, args.num_classes)
-    train_with_log('1658042104.json', args.epochs, args.batch_size, args.lr, args.num_classes)
+    train_with_log('1658042104.json', args.epochs,
+                   args.batch_size, args.lr, args.num_classes)
