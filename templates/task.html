@@ -64,7 +64,7 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.js"></script>
+<script src="{% static 'echarts.js' %}"></script>
 <script>
     var dur_e = document.getElementById("duration");
     var finish_e = document.getElementById("finish");
