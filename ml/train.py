@@ -11,8 +11,6 @@ import argparse
 import datetime
 import json
 
-import cv2
-import matplotlib.pyplot
 import torch
 import torchvision
 
@@ -41,13 +39,6 @@ def get_data_loader(batch_size):
                                               shuffle=False)
 
     return train_loader, test_loader
-
-
-def show_inference(image, label, prediction):
-    cv2.putText(image, '{}/{}'.format(int(prediction.item()), int(label.item())),
-                (0, 26), 1, 0.5, (255, 255, 255), thickness=1, lineType=cv2.LINE_AA)
-    cv2.imshow('', image)
-    cv2.waitKey(0)
 
 
 def evaluate(model, test_loader, device):
