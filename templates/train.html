@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h1 class="title">创建模型训练 Start Training</h1>
+{% if message %}
+<div class="alert alert-danger" role="alert">
+    {{ message }}
+</div>
+{% endif %}
+<form id="model-form" method="post" class="m-3">
+    {% csrf_token %}
+    <h4 class="my-4">训练相关<small class="English">/Training Related</small></h4>
+    <div class="container" id="train-related">
+        <div class="row g-5 mb-3">
+            <div class="col">
+                <label class="form-label" for="model-select">
+                    模型
+                    <small class="English">/Model Name</small>
+                </label>
+                <select class="form-select" id="model-select" name="model">
+                    <option value="lenet" selected>LeNet</option>
+                    <option value="ad-lenet">LeNet (Additional Conv Layer)</option>
+                </select>
+            </div>
+            <div class="col">
+                <label class="form-label" for="opt-select">
+                    优化器
+                    <small class="English">/Optimizer</small>
+                </label>
+                <select class="form-select" id="opt-select" name="optimizer">
+                    <option value="adam" selected>Adam</option>
+                    <option value="sgd">SGD</option>
+                </select>
+            </div>
+        </div>
+        <div class="row g-5 mb-3">
+            <div class="col">
+                <label class="form-label" for="lr">
+                    学习率
+                    <small class="English">/Learning Rate</small>
+                </label>
+                <input class="form-control" name="lr" type="number" id="lr" min="0.00001" step="0.00001"
+                    placeholder="Enter a float, precision 0.00001">
+            </div>
+            <div class="col">
+                <label class="form-label" for="batch">
+                    批次大小
+                    <small class="English">/Batch Size</small>
+                </label>
+                <input class="form-control" name="batch" type="number" id="batch" min="1"
+                    placeholder="Enter a positive integer">
+            </div>
+        </div>
+        <div class="row g-5 mb-3">
+            <div class="col">
+                <label class="form-label" for="epoch">
+                    总轮次数
+                    <small class="English">/Epochs</small>
+                </label>
+                <input class="form-control" name="epoch" type="number" id="epoch" min="1"
+                    placeholder="Enter a positive integer">
+            </div>
+            <div class="col"></div>
+        </div>
+    </div>
+
+    <hr />
+
+    <h4 class="my-4">任务信息<small class="English">/Task Information</small></h4>
+    <div class="container" id="task-related">
+        <div class="row mb-3">
+            <label for="task-name" class="col-sm-2 col-form-label">
+                任务名称
+                <small class="English">/Task Name</small>
+            </label>
+            <div class="col-sm-10">
+                <input type="text" name="taskname" class="form-control" id="task-name"
+                    placeholder="No more than 100 characters" maxlength="100">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="person" class="col-sm-2 col-form-label">
+                发起人
+                <small class="English">/Person</small>
+            </label>
+            <div class="col-sm-10">
+                <input type="text" name="person" class="form-control" id="person"
+                    placeholder="No more than 100 characters" maxlength="100">
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label for="description" class="col-sm-2 col-form-label">
+                任务简介
+                <small class="English">/Description</small>
+            </label>
+            <div class="col-sm-10">
+                <input type="text" name="description" class="form-control" id="description"
+                    placeholder="No more than 100 characters" maxlength="300">
+            </div>
+        </div>
+    </div>
+
+    <hr />
+    <div class="row justify-content-center">
+        <div class="col-4 text-center">
+            <button class="btn btn-primary">开始训练/Submit</button>
+        </div>
+        <div class="col-4 text-center">
+            <button class="btn btn-danger" type="button">清空/Clear</button>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    var element = document.getElementById("train-link");
+    element.classList.add("active");
+</script>
+{% endblock %}

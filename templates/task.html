@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h1 class="title">任务详情 Task Information</h1>
+<div id="main" class="container mx-3 my-4">
+    <span class="float-end">Task ID: {{ task_id }}</span>
+    <h3>{{ name }}</h3>
+    <div class="d-flex flex-row-reverse my-2">
+        <div id="log" class="p-2 overflow-auto flex-grow-1 border border-dark border-2 rounded">
+            {% for l in log %}
+            <div>[{{ l.time }}] {{ l.content }}</div>
+            {% endfor %}
+        </div>
+        <div id="basic-info" class="p-2 flex-grow-1 mb-4">
+            <div class="alert alert-secondary my-3"><em>{{ description }}</em></div>
+            <div class="row my-3">
+                <div class="col-sm-4 text-end">
+                    状态<small class="English">/Status</small>:
+                </div>
+                <div class="col-sm-8">
+                    {% if status == True %}
+                    <span class="finished-status" id="status">已结束 FINISHED</span>
+                    {% else %}
+                    <span class="training-status" id="status">训练中 TRAINING</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row my-3">
+                <div class="col-sm-4 text-end">
+                    开始时间<small class="English">/Begin Time</small>:
+                </div>
+                <div class="col-sm-8" id="time">{{ created_at|date:"Y/n/j H:i:s" }}</div>
+            </div>
+            <div class="row my-3">
+                <div class="col-sm-4 text-end">
+                    持续时间<small class="English">/Duration</small>:
+                </div>
+                <div class="col-sm-8" id="duration"></div>
+            </div>
+            <div class="row my-3">
+                <div class="col-sm-4 text-end">
+                    结束时间<small class="English">/Finish Time</small>:
+                </div>
+                <div class="col-sm-8" id="finish">{{ finished_at|date:"Y/n/j H:i:s" }}</div>
+            </div>
+            <div class="row my-3">
+                <div class="col-sm-4 text-end">
+                    发起人<small class="English">/Person</small>:
+                </div>
+                <div class="col-sm-8" id="person">{{ person }}</div>
+            </div>
+        </div>
+    </div>
+    {% if status == True %}
+    <div id="dummy">训练结果<small class="English">/Results</small>:</div>
+    <div class="row my-3">
+        <div id="loss-chart" style="width: 100%; height:400px;"></div>
+    </div>
+    {% else %}
+    <div id="dummy"></div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.js"></script>
+<script>
+    var dur_e = document.getElementById("duration");
+    var finish_e = document.getElementById("finish");
+    var time = new Date(document.getElementById("time").innerText);
+
+    updateDuration = function (t) {
+        var delta = (t - time) / 1000;
+        var days = Math.floor(delta / 86400);
+        var hours = Math.floor(delta % 86400 / 3600);
+        var minutes = Math.floor(delta % 3600 / 60);
+        var seconds = Math.floor(delta % 60);
+        hours = hours >= 10 ? hours : '0' + hours;
+        minutes = minutes >= 10 ? minutes : '0' + minutes;
+        seconds = seconds >= 10 ? seconds : '0' + seconds;
+        dur_e.innerText = days + " days, " + hours + ':' + minutes + ':' + seconds;
+    };
+
+    // Formatting end time
+    console.log("ffwef", document.getElementById("dummy").innerText);
+    if (document.getElementById("dummy").innerText === "") {
+        // Training
+        finish_e.innerText = "-";
+        updateDuration(Date.now());
+        setInterval(() => {
+            updateDuration(Date.now());
+        }, 1000);
+    }
+    else {
+        // Finished
+        var end = new Date(finish_e.innerText);
+        updateDuration(end);
+    }
+
+    // Loss Curve
+    var losses = {{ losschart }};
+    var accurs = {{ precchart }};
+    var epochs = [...Array(losses.length).keys()].map(v => 1 + v);
+
+    var myChart = echarts.init(document.getElementById('loss-chart'));
+    var option = {
+        title: {
+            text: '模型训练结果'
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'cross' }
+        },
+        legend: {
+        },
+        xAxis: {
+            axisTick: {
+                alignWithLabel: true
+            },
+            data: epochs
+        },
+        yAxis: [
+            {
+                type: 'value',
+                name: '损失函数'
+            },
+            {
+                type: 'value',
+                name: '测试精度',
+                axisLabel: {
+                    formatter: '{value} %'
+                },
+                min: Math.floor(accurs[0])
+            }
+        ],
+        series: [
+            {
+                name: '损失函数',
+                type: 'line',
+                smooth: true,
+                yAxisIndex: 0,
+                data: losses
+            },
+            {
+                name: '精度',
+                type: 'line',
+                smooth: true,
+                yAxisIndex: 1,
+                data: accurs
+            }
+        ]
+    };
+    myChart.setOption(option);
+</script>
+{% endblock %}

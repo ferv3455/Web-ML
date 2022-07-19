@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="title">
+    <a class="btn btn-primary float-end" href="/train">创建任务</a>
+    <h1>全部训练任务 All Training Tasks</h1>
+</div>
+
+<div class="container my-5">
+    {% for task in tasks %}
+    <div class="container card record border-1 my-3 p-4">
+        <div>
+            <span class="float-end">ID: {{ task.task_id }}</span>
+            <h4>
+                {% if task.status == True %}
+                <a class="task-link finished stretched-link" href="/task/{{ task.task_id }}">
+                    {{ task.name }}
+                </a>
+                {% else %}
+                <a class="task-link training stretched-link" href="/task/{{ task.task_id }}">
+                    {{ task.name }}
+                </a>
+                {% endif %}
+            </h4>
+        </div>
+        <div>{{ task.description }}</div>
+        <hr />
+        <div class="row g-3">
+            <div class="col"> 发起人<small class="English">/Person</small>: {{ task.person }} </div>
+            <div class="col"> 开始时间<small class="English">/Begin Time</small>: {{ task.created_at|date:"Y/n/j H:i:s" }}
+            </div>
+            <div class="col">
+                状态<small class="English">/Status</small>:
+                {% if task.status == True %}
+                <span class="finished-status">已结束 FINISHED</span>
+                {% else %}
+                <span class="training-status">训练中 TRAINING</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    var element = document.getElementById("tasks-link");
+    element.classList.add("active");
+</script>
+{% endblock %}

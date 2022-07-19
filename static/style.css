@@ -1,0 +1,82 @@
+html {
+    height: 100%;
+}
+
+body {
+    padding-top: 56px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100%;
+}
+
+footer {
+    text-align: center;
+}
+
+.fullscreen {
+    height: 100%;
+    background: url('./background.jpg') no-repeat bottom;
+    background-size: cover;
+}
+
+#index-main {
+    max-width: 42em;
+}
+
+#index-box {
+    --bs-bg-opacity: .5;
+}
+
+.title {
+    margin: 10px;
+}
+
+.English {
+    color: #8f8f90;
+    font-style: italic;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.form-select:hover {
+    cursor: pointer;
+}
+
+.finished-status {
+    color: green;
+}
+
+.training-status {
+    color: brown;
+}
+
+.card{
+    box-shadow: 0 6px 10px rgba(0,0,0,.08), 0 0 6px rgba(0,0,0,.05);
+    transition: .3s transform cubic-bezier(.155,1.105,.295,1.12),.3s box-shadow,.3s;
+}
+
+.card:hover{
+    transform: scale(1.02);
+    box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+    cursor: pointer;
+}
+
+.task-link {
+    padding-left: 28px;
+    text-decoration: none;
+}
+
+.task-link.training {
+    background: url('./training.png') no-repeat center left;
+}
+
+.task-link.finished {
+    background: url('./finished.png') no-repeat center left;
+}
+
+#log {
+    height: 312px;
+    flex-basis: 0px;
+}
+
+#basic-info {
+    flex-basis: 0px;
+}
