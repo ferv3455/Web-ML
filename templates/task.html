@@ -70,7 +70,7 @@
     var finish_e = document.getElementById("finish");
     var time = new Date(document.getElementById("time").innerText);
 
-    updateDuration = function (t) {
+    var updateDuration = function (t) {
         var delta = (t - time) / 1000;
         var days = Math.floor(delta / 86400);
         var hours = Math.floor(delta % 86400 / 3600);
@@ -82,14 +82,28 @@
         dur_e.innerText = days + " days, " + hours + ':' + minutes + ':' + seconds;
     };
 
+    var getServerDate = function () {
+        var xhr = null;
+        if (window.XMLHttpRequest) {
+            xhr = new window.XMLHttpRequest();
+        } else {
+            xhr = new ActiveObject("Microsoft.XMLHTTP")
+        }
+
+        xhr.open("GET", "/", false)
+        xhr.send(null);
+        var date = xhr.getResponseHeader("Date");
+        return new Date(date);
+    };
+
     // Formatting end time
     console.log("ffwef", document.getElementById("dummy").innerText);
     if (document.getElementById("dummy").innerText === "") {
         // Training
         finish_e.innerText = "-";
-        updateDuration(Date.now());
+        updateDuration(getServerDate());
         setInterval(() => {
-            updateDuration(Date.now());
+            updateDuration(getServerDate());
         }, 1000);
     }
     else {
